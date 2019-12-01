@@ -10,7 +10,10 @@ import './assets/css/global.css'
 import './assets/fonts/iconfont.css'
 // 引入elementUI样式
 import 'element-ui/lib/theme-chalk/index.css'
-
+import axios from 'axios'
+// 配置 axios
+axios.defaults.baseURL = "http://locahost:8090/"
+Vue.prototype.$http = axios;
 Vue.use(ElementUI)
 Vue.config.productionTip = false
 

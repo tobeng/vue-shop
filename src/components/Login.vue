@@ -25,6 +25,7 @@
     </div>
 </template>
 <script>
+import { async } from 'q';
 export default {
     data(){
         return{
@@ -52,9 +53,17 @@ export default {
         reset() {
             this.$refs.loginFormRef.resetFields();
         },
+        // 登录请求
         login() {
-            this.$refs.loginFormRef.validate((valid) => {
-                console.log(valid);
+            // 登录预验证
+            this.$refs.loginFormRef.validate( async valid => {
+                if(!valid) return;
+                const {data: result} = await this.$http.post("login", this.loginFrom);
+                if(result.meta.status == 200){
+                    console.log('登录成功');
+                }else{
+                    console.log('登录失败')
+                }
             })
         }
     }
