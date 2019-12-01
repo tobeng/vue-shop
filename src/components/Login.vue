@@ -57,12 +57,22 @@ export default {
         login() {
             // 登录预验证
             this.$refs.loginFormRef.validate( async valid => {
-                if(!valid) return;
+                // message 提示
+                //if(!valid) return this.$message.error("请输入登录信息");
+                // messageBox 提示
+                if(!valid) return this.$alert('请输入用户名和密码!', '登录错误', {
+                                        confirmButtonText: '确定',
+                                        type: 'error',
+                                        callback: action => {}
+                                    });;
                 const {data: result} = await this.$http.post("login", this.loginFrom);
-                if(result.meta.status == 200){
+                if(result.meta.status === 200){
                     console.log('登录成功');
+                    this.$message.success('登录成功');
                 }else{
-                    console.log('登录失败')
+                    console.log('登录失败');
+                    this.$message.error("登录失败");
+                    
                 }
             })
         }
