@@ -69,10 +69,13 @@ export default {
                 if(result.meta.status === 200){
                     console.log('登录成功');
                     this.$message.success('登录成功');
+                    // 登录信息 token 保存到 sessionStorage 中
+                    window.sessionStorage.setItem('token', result.data.token);
+                    // 添加编程式路由规则
+                    this.$router.push('/home');
                 }else{
                     console.log('登录失败');
                     this.$message.error("登录失败");
-                    
                 }
             })
         }
