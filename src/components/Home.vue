@@ -23,17 +23,17 @@
           active-text-color="#ffd04b"
         >
           <!-- 一级菜单栏区域 -->
-          <el-submenu index="1">
+          <el-submenu :index="item.id+''" v-for='item in menuList' :key='item.id'>
             <template slot="title">
               <!-- 图标 -->
               <i class="el-icon-location"></i>
               <!-- 文本 -->
-              <span>导航一</span>
+              <span>{{item.authName}}</span>
             </template>
             <!-- 二级菜单 -->
-            <el-menu-item index="1-1">
+            <el-menu-item :index="subItem.id+''" v-for='subItem in item.children' :key='subItem.id'>
               <i class="el-icon-location"></i>
-              <span>导航一</span>
+              <span>{{subItem.authName}}</span>
             </el-menu-item>
           </el-submenu>
         </el-menu>
@@ -45,12 +45,29 @@
 </template>
 <script>
 export default {
-  methods: {
-    logout() {
-      window.sessionStorage.clear()
-      this.$router.push('/login')
+    data(){
+        return{
+            menuList: []
+        }
+    },
+    created(){
+        this.getMenuList();
+    },
+    methods: {
+        logout() {
+        window.sessionStorage.clear()
+        this.$router.push('/login')
+        },
+        // 获取所有的菜单
+        async getMenuList(){
+            const {data: result} = await this.$http.get('menu');
+            if(result.meta.status !== 200){
+                return this.$message.console.error(result.data.msg);
+            }
+            this.menuList = result.data.menuList;
+            console.log(menuList);
+        }
     }
-  }
 }
 </script>
 <style lang="less" scoped>
@@ -79,7 +96,7 @@ export default {
 .el-mian {
   background-color: #eaedf1;
 }
-.el-menu-vertical-demo{
-    border-right: none;
+.el-menu-vertical-demo {
+  border-right: none;
 }
 </style>
