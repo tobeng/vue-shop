@@ -79,4 +79,7 @@ export default {
 .el-mian {
   background-color: #eaedf1;
 }
+.el-menu-vertical-demo{
+    border-right: none;
+}
 </style>

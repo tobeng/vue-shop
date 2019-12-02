@@ -30,7 +30,7 @@ router.beforeEach((to, from, next) => {
   // next() 表示放行 next('/login') 带参数表示强制跳转
   if(to.path === '/login') return next();
   const token = window.sessionStorage.getItem('token');
-  if(!token) return next("/login");
+  if(!token) return next('/login');
   next();
 })
 

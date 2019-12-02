@@ -12,7 +12,13 @@ import './assets/fonts/iconfont.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
 // 配置 axios
-axios.defaults.baseURL = "http://locahost:8090/"
+axios.defaults.baseURL = 'http://locahost:8090/'
+// axios 增加请求路径
+axios.interceptors.request.use(config => {
+  console.log(config);
+  config.header.Authorization = window.sessionStorage.getItem('token');
+  return config;
+})
 Vue.prototype.$http = axios;
 Vue.use(ElementUI)
 Vue.config.productionTip = false
