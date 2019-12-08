@@ -15,3 +15,12 @@ body,
 .el-card{
     box-shadow: 0px 1px 1px rgb(0, 0, 0, 0.10) !important;
 }
+
+.el-table{
+    margin-top: 15px;
+    font-size: 12px !important;
+}
+
+.el-pagination{
+    margin-top: 15px;
+}
