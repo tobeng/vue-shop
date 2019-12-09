@@ -10,16 +10,23 @@
     <el-card class="box-card">
       <el-row :gutter="20">
         <el-col :span="7">
-          <el-input placeholder="请输入内容" v-model="input3" class="input-with-select">
-            <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-input
+            placeholder="请输入内容"
+            size="small"
+            v-model="queryInfo.query"
+            clearable
+            @clear="getUserList"
+            class="input-with-select"
+          >
+            <el-button slot="append" @click="getUserList" icon="el-icon-search"></el-button>
           </el-input>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary">添加用户</el-button>
+          <el-button type="primary" size="small" @click="addDialogVisible = true">添加用户</el-button>
         </el-col>
       </el-row>
       <el-row>
-        <el-table :data="userList" style="width: 100%" border stripe>
+        <el-table :data="userList" style="width: 100%" size="small" border stripe>
           <el-table-column type="index" label="编号"></el-table-column>
           <el-table-column prop="username" label="姓名"></el-table-column>
           <el-table-column prop="age" label="年龄"></el-table-column>
@@ -58,11 +65,59 @@
         ></el-pagination>
       </el-row>
     </el-card>
+    <!-- 添加用户对话框 -->
+    <el-dialog
+      title="添加用户"
+      :visible.sync="addDialogVisible"
+      width="40%"
+      @close="addDialogClosed"
+    >
+      <!-- 主体内容区域 -->
+      <el-form
+        :model="addForm"
+        :rules="addFormRules"
+        ref="addFormRef"
+        label-width="13%"
+        class="demo-ruleForm"
+      >
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="addForm.username"></el-input>
+        </el-form-item>
+        <el-form-item label="年龄" prop="age">
+          <el-input v-model.number="addForm.age"></el-input>
+        </el-form-item>
+        <el-form-item label="地址" prop="address">
+          <el-input v-model="addForm.address"></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 底部区域 -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addUser">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
 export default {
   data() {
+    var checkAge = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('年龄不能为空'))
+      }
+      setTimeout(() => {
+        if (!Number.isInteger(value)) {
+          console.log(value + Number.isInteger(value))
+          callback(new Error('请输入数字值'))
+        } else {
+          if (value < 18) {
+            callback(new Error('必须年满18岁'))
+          } else {
+            callback()
+          }
+        }
+      }, 1000)
+    }
     return {
       // 获取用户列表参数对象
       queryInfo: {
@@ -72,7 +127,7 @@ export default {
       },
       userList: [
         {
-          id:1,
+          id: 1,
           username: '张三',
           age: 20,
           address: '上海徐汇区',
@@ -81,7 +136,44 @@ export default {
       ],
       total: 0,
       pageNum: 1,
-      pageSize: 20
+      pageSize: 20,
+      // 控制添加用户对话框显示与隐藏
+      addDialogVisible: false,
+      addForm: {
+        username: '',
+        age: '',
+        address: ''
+      },
+      addFormRules: {
+        username: [
+          {
+            required: true,
+            message: '请输入用户名',
+            trigger: 'blur'
+          },
+          {
+            min: 3,
+            max: 10,
+            message: '请输入3到10个字符之间',
+            trigger: 'blur'
+          }
+        ],
+        age: [
+          {
+            required: true,
+            message: '请输入年龄',
+            trigger: 'blur'
+          },
+          { validator: checkAge, trigger: 'blur' }
+        ],
+        address: [
+          {
+            required: true,
+            message: '请输入地址',
+            trigger: 'blur'
+          }
+        ]
+      }
     }
   },
   created() {
@@ -99,24 +191,46 @@ export default {
       this.pageSize = res.data.pageSize
     },
     // 监听 pagesize 改变事件
-    handleSizeChange(newsize){
-      this.queryInfo.pageSize = newsize; 
-      this.getUserList();
+    handleSizeChange(newsize) {
+      this.queryInfo.pageSize = newsize
+      this.getUserList()
     },
     // 监听页码值改变事件
-    handleCurrentChange(newpage){
-      this.queryInfo.pageNum = newpage;
-      this.getUserList();
+    handleCurrentChange(newpage) {
+      this.queryInfo.pageNum = newpage
+      this.getUserList()
     },
     // 监听 switch 触发事件
-    useStatusChang(userInfo){
-      const {data: res} = this.$http.put(`users/${userInfo.id}/status/${userInfo.msg_status}`);
-      if(res.status !== 200){
-        userInfo.msg_status = !userInfo.msg_status;
-        this.$message.error("更新状态失败！");
-        return;
+    useStatusChang(userInfo) {
+      const { data: res } = this.$http.put(
+        `users/${userInfo.id}/status/${userInfo.msg_status}`
+      )
+      if (res.status !== 200) {
+        userInfo.msg_status = !userInfo.msg_status
+        this.$message.error('更新状态失败！')
+        return
       }
-      this.$message.success("更新状态成功！");
+      this.$message.success('更新状态成功！')
+    },
+    // 监听对话框关闭
+    addDialogClosed(){
+      this.$refs.addFormRef.resetFields();
+    },
+    addUser(){
+      this.$refs.addFormRef.validate(validator => {
+        if(!validator){
+          return;
+        };
+        const {data: res} = this.$http.post('user', this.addForm);
+        if(res.meta.status !== 200){
+          this.$message.error("添加用户失败！");
+          return;
+        }
+        this.$message.success("添加用户成功！");
+        this.addDialogVisible = false;
+        this.getUserList();
+      })
+      
     }
   }
 }
