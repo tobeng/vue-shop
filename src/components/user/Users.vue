@@ -45,7 +45,7 @@
           <el-table-column prop label="操作">
             <template slot-scope="scope">
               <el-tooltip effect="dark" content="修改" placement="top" :enterable="false">
-                <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+                <el-button type="primary" icon="el-icon-edit" @click="showEditDialog(scope.row.id)" size="mini"></el-button>
               </el-tooltip>
               <el-tooltip effect="dark" content="删除" placement="top" :enterable="false">
                 <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
@@ -96,6 +96,38 @@
         <el-button type="primary" @click="addUser">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 修改用户对话框 -->
+    <el-dialog
+      title="修改用户"
+      :visible.sync="editDialogVisible"
+      width="40%"
+      @close="editDialogClosed"
+    >
+      <!-- 主体内容区域 -->
+      <el-form
+        :model="editForm"
+        :rules="editFormRules"
+        ref="editFormRef"
+        label-width="13%"
+        class="demo-ruleForm"
+      >
+        <el-form-item label="用户名">
+          <el-input v-model="editForm.username" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="年龄" prop="age">
+          <el-input v-model.number="editForm.age"></el-input>
+        </el-form-item>
+        <el-form-item label="地址" prop="address">
+          <el-input v-model="editForm.address"></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 底部区域 -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addUser">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -139,11 +171,14 @@ export default {
       pageSize: 20,
       // 控制添加用户对话框显示与隐藏
       addDialogVisible: false,
+      // 控制修改用户对话框显示与隐藏
+      editDialogVisible: false,
       addForm: {
         username: '',
         age: '',
         address: ''
       },
+      editForm: {},
       addFormRules: {
         username: [
           {
@@ -181,7 +216,7 @@ export default {
   },
   methods: {
     async getUserList() {
-      const { data: res } = this.$http.get('users', { params: this.queryInfo })
+      const { data: res } = await this.$http.get('users', { params: this.queryInfo })
       if (res.meta.status !== 200) {
         this.$message.error('获取用户信息失败！')
       }
@@ -230,7 +265,16 @@ export default {
         this.addDialogVisible = false;
         this.getUserList();
       })
-      
+    },
+    // 修改事件
+    async showEditDialog(id){
+      // const {data: res} = await this.$http.get(`/user/${id}`)
+      // if(res.meta,status !== 200){
+      //   this.$message.error("获取用户信息详情失败！");
+      //   return;
+      // }
+      // this.editForm = res.data;
+      this.editDialogVisible = true;
     }
   }
 }
