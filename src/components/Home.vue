@@ -63,6 +63,18 @@ export default {
                 'authName': '用户管理',
                 'icon': 'el-icon-location',
                 'path': 'users'
+              },{
+                'id':3,
+                "children":[],
+                'authName': '用户权限',
+                'icon': 'el-icon-location',
+                'path': 'rights'
+              },{
+                'id':4,
+                "children":[],
+                'authName': '用户角色',
+                'icon': 'el-icon-location',
+                'path': 'roles'
               }],
               'authName': '主页',
               'icon': 'el-icon-location',

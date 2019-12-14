@@ -48,7 +48,7 @@
                 <el-button type="primary" icon="el-icon-edit" @click="showEditDialog(scope.row.id)" size="mini"></el-button>
               </el-tooltip>
               <el-tooltip effect="dark" content="删除" placement="top" :enterable="false">
-                <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+                <el-button type="danger" icon="el-icon-delete" size="mini" @click="removeUser(socpe.row.id)"></el-button>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -125,12 +125,13 @@
       <!-- 底部区域 -->
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addUser">确 定</el-button>
+        <el-button type="primary" @click="editUser">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 <script>
+import { async } from 'q'
 export default {
   data() {
     var checkAge = (rule, value, callback) => {
@@ -275,6 +276,51 @@ export default {
       // }
       // this.editForm = res.data;
       this.editDialogVisible = true;
+    },
+    editDialogClosed(){
+      this.$refs.editFormRef.resetFields();
+    },
+    editUser(){
+      this.$refs.editFormRef.validate(async validate => {
+        if(!validate){
+          return
+        }
+        // 请求修改
+        const {data: res} = await this.$http.put("/user/" + this.editForm.id,{
+          email: this.editForm.email, mobile: this.editForm.mobile 
+        })
+        // 关闭修改框
+        this.editDialogVisible = false;
+        // 刷新列表
+        this.getUserList();
+        // 提示消息
+        if(res.meta.status !== 200){
+          this.$message.error("新增失败！");
+        }
+        this.$message.success("新增成功!");
+      })
+    },
+    // 删除用户数据
+    removeUser(id){
+      // 提示是否要删除
+      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          const {data: res} = this.$http.delete("/user/" + id);
+          if(res.meta.status !== 200){
+            this.$message.error("删除失败！")
+            return;
+          }
+          this.$message.success("删除成功!")
+          this.getUserList();
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
     }
   }
 }

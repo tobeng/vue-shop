@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import ElementUI from 'element-ui'
+import ElementUI, { MessageBox } from 'element-ui'
 // 引入全局样式
 import './assets/css/global.css'
 // 引入第三方样式
@@ -22,6 +22,7 @@ axios.interceptors.request.use(config => {
 Vue.prototype.$http = axios;
 Vue.use(ElementUI)
 Vue.config.productionTip = false
+Vue.prototype.$confirm = MessageBox.confirm
 
 /* eslint-disable no-new */
 new Vue({
