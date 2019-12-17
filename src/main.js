@@ -16,7 +16,7 @@ axios.defaults.baseURL = 'https://renoblog.xyz/api/private/v1/'
 // axios 增加请求路径
 axios.interceptors.request.use(config => {
   console.log(config);
-  config.header.Authorization = window.sessionStorage.getItem('token');
+  config.headers.Authorization = window.sessionStorage.getItem('token');
   return config;
 })
 Vue.prototype.$http = axios;

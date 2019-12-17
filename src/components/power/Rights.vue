@@ -27,25 +27,21 @@ export default {
   data() {
     return {
       // 权限列表
-      rightsList: [{
-          authName: '用户权限',
-          path: '/path',
-          level: '1'
-      }]
+      rightsList: []
     }
   },
   created() {
     // 初始化权限列表
-    // this.getRightsList()
+    this.getRightsList()
   },
   methods: {
     async getRightsList() {
-      const { data: res } = await this.$http.get('/user/list')
+      const { data: res } = await this.$http.get('rights/list')
       if (res.meta.status !== 200) {
         return this.$message.error('获取权限信息失败!')
       }
       this.rightsList = res.data
-      this.$message.error('获取权限信息成功！')
+      this.$message.success('获取权限信息成功！')
     }
   }
 }

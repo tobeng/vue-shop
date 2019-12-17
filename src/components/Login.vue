@@ -27,8 +27,8 @@
         </el-form-item>
         <!-- 按钮区域 -->
         <el-form-item class="btns">
-          <el-button type="primary" @click="login">登录</el-button>
-          <el-button type="info" @click="reset">重置</el-button>
+          <el-button type="primary" @click="login()">登录</el-button>
+          <el-button type="info" @click="reset()">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -74,18 +74,18 @@ export default {
             callback: action => {}
           })
         // 登录请求
-        // const {data: result} = await this.$http.post("login", this.loginFrom);
+        const {data: result} = await this.$http.post("login", this.loginFrom);
         // 模拟token
-        const token = 'dshjakbfsajknjksadksalmd'
-        const status = 200
-        // if(result.meta.status === 200){
-        if (status === 200) {
+        // const token = 'dshjakbfsajknjksadksalmd'
+        // const status = 200
+        if(result.meta.status === 200){
+        // if (status === 200) {
           console.log('登录成功')
           this.$message.success('登录成功')
           // 登录信息 token 保存到 sessionStorage 中
-          //window.sessionStorage.setItem('token', result.data.token);
+          window.sessionStorage.setItem('token', result.data.token);
           // 模拟数据保存
-          window.sessionStorage.setItem('token', token)
+          // window.sessionStorage.setItem('token', token)
           // 添加编程式路由规则
           this.$router.push('/home')
         } else {
