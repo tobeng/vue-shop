@@ -269,12 +269,12 @@ export default {
     },
     // 修改事件
     async showEditDialog(id){
-      // const {data: res} = await this.$http.get(`/user/${id}`)
-      // if(res.meta,status !== 200){
-      //   this.$message.error("获取用户信息详情失败！");
-      //   return;
-      // }
-      // this.editForm = res.data;
+      const {data: res} = await this.$http.get(`/user/${id}`)
+      if(res.meta,status !== 200){
+        this.$message.error("获取用户信息详情失败！");
+        return;
+      }
+      this.editForm = res.data;
       this.editDialogVisible = true;
     },
     editDialogClosed(){
