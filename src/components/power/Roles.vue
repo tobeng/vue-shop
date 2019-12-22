@@ -48,6 +48,15 @@
               @click="removeUser(socpe.row.id)"
             ></el-button>
           </el-tooltip>
+          <!-- 分配角色按钮 -->
+          <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
+            <el-button
+              type="warning"
+              icon="el-icon-setting"
+              size="mini"
+              @click="showSetRightsDialog(scope.row)"
+            ></el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>

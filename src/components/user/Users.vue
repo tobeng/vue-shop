@@ -57,7 +57,7 @@
                   type="danger"
                   icon="el-icon-delete"
                   size="mini"
-                  @click="removeUser(socpe.row.id)"
+                  @click="removeUser(scope.row.id)"
                 ></el-button>
               </el-tooltip>
               <!-- 分配角色按钮 -->
@@ -66,7 +66,7 @@
                   type="warning"
                   icon="el-icon-setting"
                   size="mini"
-                  @click="setRole(scope.row)"
+                  @click="showSetRightsDialog(scope.row)"
                 ></el-button>
               </el-tooltip>
             </template>
@@ -138,8 +138,8 @@
       </span>
     </el-dialog>
     <!-- 树形输入框 -->
-    <el-dialog title="提示" :visible.sync="treeDialogVisible" width="30%" :before-close="handleClose">
-      <el-tree :data="rolesList" :props="treeProps" @node-click="handleNodeClick"></el-tree>
+    <el-dialog title="分配权限" :visible.sync="setRightsDialogViaible" width="50%" :before-close="handleClose">
+      <el-tree :default-checked-keys="defKeys" show-checkbox :data="rolesList" :props="treeProps" @node-click="handleNodeClick" node-key="id" :default-expand-all="true"></el-tree>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
@@ -188,12 +188,13 @@ export default {
       addDialogVisible: false,
       // 控制修改用户对话框显示与隐藏
       editDialogVisible: false,
-      treeDialogVisible: false,
+      setRightsDialogViaible: false,
       addForm: {
         username: '',
         age: '',
         address: ''
       },
+      defKeys:[104],
       editForm: {},
       addFormRules: {
         username: [
@@ -380,6 +381,24 @@ export default {
       this.getUserList()
       this.setRoleDialogVisible = false
     },
+    // 分配权限
+    async showSetRightsDialog(role){
+      // 获取所有权限数据
+      const {data: res} = await this.$http.get("/rights/tree");
+      if(res.meta.status !== 200){
+        return this.$message.error("获取权限数据失败！");
+      }
+      this.rolesList = res.data;
+      this.getLeafKey(role, this.defKeys);
+      this.setRightsDialogViaible = true;
+    },
+    // 通过递归获取所有的三级节点id
+    getLeafKey(node, arr){
+        if(!node.children){
+          return arr.push(node.id)
+        }
+        node.children.forEach(item => this.getLeafKey(item, arr))
+    }
   }
 }
 </script>
