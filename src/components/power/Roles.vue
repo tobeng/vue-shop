@@ -1,30 +1,44 @@
 <template>
   <div>
     <el-table :data="rolelist" border stripe>
-        <!-- 展开列 -->
+      <!-- 展开列 -->
       <el-table-column type="expand">
-          <template slot-scope="scope">
-            <el-row v-for="(item1, l1) in scope.row.children" closable @click="romverAuthClick(scope.row, item1.id)" :key="item1.id">
-                <!-- 渲染一级 -->
-                <el-col :span="5">
-                    <el-tag>{{item1.authName}}</el-tag>
+        <template slot-scope="scope">
+          <el-row
+            v-for="(item1, l1) in scope.row.children"
+            closable
+            @click="romverAuthClick(scope.row, item1.id)"
+            :key="item1.id"
+          >
+            <!-- 渲染一级 -->
+            <el-col :span="5">
+              <el-tag>{{item1.authName}}</el-tag>
+            </el-col>
+            <!-- 渲染二级和三级权限 -->
+            <el-col :span="19">
+              <el-row
+                :class="[l2 === 0 ? '': 'bdtop','vcenter']"
+                closable
+                @click="romverAuthClick(scope.row, item2.id)"
+                v-for="(item2, l2) in item1.children"
+                :key="item2.children"
+              >
+                <el-col :span="6">
+                  <el-tag>{{item2.authName}}</el-tag>
+                  <i class="el-icon-caret-right"></i>
                 </el-col>
-                <!-- 渲染二级和三级权限 -->
-                <el-col :span="19">
-                    <el-row :class="[l2 === 0 ? '': 'bdtop','vcenter']" closable @click="romverAuthClick(scope.row, item2.id)" v-for="(item2, l2) in item1.children" :key="item2.children">
-                        <el-col :span="6">
-                          <el-tag>{{item2.authName}}</el-tag>
-                          <i class="el-icon-caret-right"></i>
-                        </el-col>
-                        <el-col :span="18">
-                          <el-tag v-for="(item3, l3) in item2.children" closable @click="romverAuthClick(scope.row, item3.id)" :key="item3.children">
-                            {{item3.authName}}
-                          </el-tag>
-                        </el-col>
-                    </el-row>
+                <el-col :span="18">
+                  <el-tag
+                    v-for="(item3, l3) in item2.children"
+                    closable
+                    @click="romverAuthClick(scope.row, item3.id)"
+                    :key="item3.children"
+                  >{{item3.authName}}</el-tag>
                 </el-col>
-            </el-row>
-          </template>
+              </el-row>
+            </el-col>
+          </el-row>
+        </template>
       </el-table-column>
       <!-- 索引列 -->
       <el-table-column type="index"></el-table-column>
@@ -54,12 +68,34 @@
               type="warning"
               icon="el-icon-setting"
               size="mini"
-              @click="showSetRightsDialog(scope.row)"
+              @click="showSetRightDialog(scope.row)"
             ></el-button>
           </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
+    <!-- 树形输入框 -->
+    <el-dialog
+      title="分配权限"
+      :visible.sync="setRightsDialogViaible"
+      width="50%"
+      :before-close="setRightsDialogClose"
+    >
+      <el-tree
+        :default-checked-keys="defKeys"
+        show-checkbox
+        :data="rightsList"
+        :props="treeProps"
+        @node-click="handleNodeClick"
+        node-key="id"
+        :default-expand-all="true"
+        ref="treeRef"
+      ></el-tree>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRightsDialogViaible = false">取 消</el-button>
+        <el-button type="primary" @click="allotRights">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -69,7 +105,7 @@ export default {
       // 所有角色列表数据
       rolelist: [],
       // 控制分配权限对话框的显示与隐藏
-      setRightDialogVisible: false,
+      setRightsDialogViaible: false,
       // 所有权限的数据
       rightslist: [],
       // 树形控件的属性绑定对象
@@ -144,7 +180,7 @@ export default {
       // 递归获取三级节点的Id
       this.getLeafKeys(role, this.defKeys)
 
-      this.setRightDialogVisible = true
+      this.setRightsDialogViaible = true
     },
     // 通过递归的形式，获取角色下所有三级权限的id，并保存到 defKeys 数组中
     getLeafKeys(node, arr) {
@@ -152,7 +188,6 @@ export default {
       if (!node.children) {
         return arr.push(node.id)
       }
-
       node.children.forEach(item => this.getLeafKeys(item, arr))
     },
     // 监听分配权限对话框的关闭事件
@@ -179,7 +214,7 @@ export default {
 
       this.$message.success('分配权限成功！')
       this.getRolesList()
-      this.setRightDialogVisible = false
+      this.setRightsDialogViaible = false
     }
   }
 }

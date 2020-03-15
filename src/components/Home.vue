@@ -75,6 +75,12 @@ export default {
                 'authName': '用户角色',
                 'icon': 'el-icon-location',
                 'path': 'roles'
+              },{
+                'id':5,
+                "children":[],
+                'authName': '菜单管理',
+                'icon': 'el-icon-location',
+                'path': 'cate'
               }],
               'authName': '主页',
               'icon': 'el-icon-location',

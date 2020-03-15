@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import ElementUI, { MessageBox } from 'element-ui'
+import ElementUI, {MessageBox} from 'element-ui'
 // 引入全局样式
 import './assets/css/global.css'
 // 引入第三方样式
@@ -15,9 +15,9 @@ import axios from 'axios'
 axios.defaults.baseURL = 'https://renoblog.xyz/api/private/v1/'
 // axios 增加请求路径
 axios.interceptors.request.use(config => {
-  console.log(config);
-  config.headers.Authorization = window.sessionStorage.getItem('token');
-  return config;
+    console.log(config);
+    config.headers.Authorization = window.sessionStorage.getItem('token');
+    return config;
 })
 Vue.prototype.$http = axios;
 Vue.use(ElementUI)
@@ -26,8 +26,8 @@ Vue.prototype.$confirm = MessageBox.confirm
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
-  router,
-  components: { App },
-  template: '<App/>'
+    el: '#app',
+    router,
+    components: {App},
+    template: '<App/>'
 })
